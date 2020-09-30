@@ -1,4 +1,4 @@
-const { users } = require("./data");
+const users = require("./data");
 
 const resolvers = {
   Query: {

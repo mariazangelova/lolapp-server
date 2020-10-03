@@ -1,13 +1,22 @@
-const users = require("./data");
+const User = require("./models");
 
 const resolvers = {
   Query: {
-    users: () => users,
+    users: () => User.find(),
     user(parent, args, context, info) {
-      return users.find((user) => user.id === args.id);
+      const user = User.findById(args.id);
+      return user;
     },
     login(parent, args, context, info) {
-      return users.find((user) => user.password === args.password);
+      const user = User.findById(args.id);
+      return user;
+    },
+  },
+  Mutation: {
+    signup: async (_, { username, password }) => {
+      const user = new User({ username, password });
+      await user.save();
+      return user;
     },
   },
 };

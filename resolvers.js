@@ -34,6 +34,17 @@ const resolvers = {
       await user.save();
       return user;
     },
+    removeUser: async (_, { id }) => {
+      const user = await User.findByIdAndDelete(id);
+      console.log(user);
+      return "User removed from database";
+    },
+    updateUser: async (_, { id, username, password }) => {
+      const hash = bcrypt.hashSync(password, 8);
+      const update = { username, password: hash };
+      const user = await User.findOneAndUpdate(id, update);
+      return "User data updated";
+    },
   },
 };
 

@@ -1,4 +1,6 @@
 const User = require("./models");
+const bcrypt = require("bcryptjs");
+const { AuthenticationError, UserInputError } = require("apollo-server");
 
 const resolvers = {
   Query: {
@@ -7,14 +9,26 @@ const resolvers = {
       const user = User.findById(args.id);
       return user;
     },
-    login(parent, args, context, info) {
-      const user = User.findById(args.id);
+    login: async (parent, args, context, info) => {
+      const user = await User.findOne({
+        username: args.username,
+      }).catch((error) => console.log("Caught:", error.message));
+      if (!user) {
+        throw new UserInputError("Form Arguments invalid", {
+          invalidArgs: Object.keys(args.username),
+        });
+      }
+      const passwordIsValid = bcrypt.compareSync(args.password, user.password);
+      if (!passwordIsValid) {
+        throw new AuthenticationError("Invalid password");
+      }
       return user;
     },
   },
   Mutation: {
     signup: async (_, { username, password }) => {
-      const user = new User({ username, password });
+      const hash = bcrypt.hashSync(password, 8);
+      const user = new User({ username, password: hash });
       await user.save();
       return user;
     },

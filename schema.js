@@ -9,7 +9,7 @@ const typeDefs = gql`
   type Query {
     users: [User]
     user(id: ID!): User
-    login(username: String!, password: String!): User
+    login(username: String!, password: String!): String!
   }
   type Mutation {
     signup(username: String!, password: String!): User!

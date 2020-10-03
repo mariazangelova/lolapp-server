@@ -1,6 +1,7 @@
 const User = require("./models");
 const bcrypt = require("bcryptjs");
 const { AuthenticationError, UserInputError } = require("apollo-server");
+const { toJWT } = require("./auth");
 
 const resolvers = {
   Query: {
@@ -22,7 +23,8 @@ const resolvers = {
       if (!passwordIsValid) {
         throw new AuthenticationError("Invalid password");
       }
-      return user;
+      const token = toJWT({ id: user.id });
+      return token;
     },
   },
   Mutation: {

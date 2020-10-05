@@ -10,6 +10,14 @@ const resolvers = {
       const user = User.findById(args.id);
       return user;
     },
+  },
+  Mutation: {
+    signup: async (_, { username, password }) => {
+      const hash = bcrypt.hashSync(password, 8);
+      const user = new User({ username, password: hash });
+      await user.save();
+      return user;
+    },
     login: async (parent, args, context, info) => {
       const user = await User.findOne({
         username: args.username,
@@ -25,14 +33,6 @@ const resolvers = {
       }
       const token = toJWT({ id: user.id });
       return token;
-    },
-  },
-  Mutation: {
-    signup: async (_, { username, password }) => {
-      const hash = bcrypt.hashSync(password, 8);
-      const user = new User({ username, password: hash });
-      await user.save();
-      return user;
     },
     removeUser: async (_, { id }) => {
       const user = await User.findByIdAndDelete(id);

@@ -12,11 +12,19 @@ const typeDefs = gql`
     author: String!
     description: String!
     image: String!
+    genres: [Genre]
+  }
+  input GenreInput {
+    name: String
+  }
+  type Genre {
+    name: String!
   }
   type Query {
     users: [User]
     user(id: ID!): User
     books: [Book]
+    genres: [Genre]
   }
   type Mutation {
     signup(username: String!, password: String!): User!
@@ -28,7 +36,11 @@ const typeDefs = gql`
       author: String
       description: String
       image: String
+      genres: [GenreInput]
     ): Book!
+    addGenre(name: String!): Genre!
+    addGenreToBook(id: ID!, genres: [GenreInput]): Book!
+    removeGenreToBook(id: ID!): Book!
   }
 `;
 

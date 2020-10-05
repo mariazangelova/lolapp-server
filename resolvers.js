@@ -1,4 +1,4 @@
-const { User, Book } = require("./models");
+const { User, Book, Genre } = require("./models");
 const bcrypt = require("bcryptjs");
 const { AuthenticationError, UserInputError } = require("apollo-server");
 const { toJWT } = require("./auth");
@@ -11,6 +11,7 @@ const resolvers = {
       return user;
     },
     books: () => Book.find(),
+    genres: () => Genre.find(),
   },
   Mutation: {
     signup: async (_, { username, password }) => {
@@ -46,9 +47,24 @@ const resolvers = {
       const user = await User.findOneAndUpdate(id, update);
       return "User data updated";
     },
-    addBook: async (_, { title, author, description, image }) => {
-      const book = new Book({ title, author, description, image });
+    addBook: async (_, { title, author, description, image, genres }) => {
+      const book = new Book({ title, author, description, image, genres });
       await book.save();
+      return book;
+    },
+    addGenre: async (_, { name }) => {
+      const genre = new Genre({ name });
+      await genre.save();
+      return genre;
+    },
+    addGenreToBook: async (_, { id, genres }) => {
+      const update = { $push: { genres: genres } };
+      const book = await Book.findOneAndUpdate(id, update);
+      return book;
+    },
+    removeGenreToBook: async (_, { id }) => {
+      const update = { $pop: { genres: 1 } };
+      const book = await Book.findOneAndUpdate(id, update);
       return book;
     },
   },

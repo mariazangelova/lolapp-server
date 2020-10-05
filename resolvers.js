@@ -1,4 +1,4 @@
-const User = require("./models");
+const { User, Book } = require("./models");
 const bcrypt = require("bcryptjs");
 const { AuthenticationError, UserInputError } = require("apollo-server");
 const { toJWT } = require("./auth");
@@ -10,6 +10,7 @@ const resolvers = {
       const user = User.findById(args.id);
       return user;
     },
+    books: () => Book.find(),
   },
   Mutation: {
     signup: async (_, { username, password }) => {
@@ -44,6 +45,11 @@ const resolvers = {
       const update = { username, password: hash };
       const user = await User.findOneAndUpdate(id, update);
       return "User data updated";
+    },
+    addBook: async (_, { title, author, description, image }) => {
+      const book = new Book({ title, author, description, image });
+      await book.save();
+      return book;
     },
   },
 };

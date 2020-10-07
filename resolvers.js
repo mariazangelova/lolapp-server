@@ -1,4 +1,4 @@
-const { User, Book, Genre } = require("./models");
+const { User, Book, Genre, Comment } = require("./models");
 const bcrypt = require("bcryptjs");
 const { AuthenticationError, UserInputError } = require("apollo-server");
 const { toJWT } = require("./auth");
@@ -10,8 +10,14 @@ const resolvers = {
       const user = User.findById(args.id);
       return user;
     },
-    books: () => Book.find(),
+    books: () => Book.find().populate("comments"),
+    book: async (_, { id }) => {
+      const book = await Book.findById(id).populate("comments");
+      console.log(book.comments);
+      return book;
+    },
     genres: () => Genre.find(),
+    comments: () => Comment.find(),
   },
   Mutation: {
     signup: async (_, { username, password }) => {
@@ -66,6 +72,23 @@ const resolvers = {
       const update = { $pop: { genres: 1 } };
       const book = await Book.findOneAndUpdate(id, update);
       return book;
+    },
+    addComment: async (_, { userId, bookId, comment }) => {
+      console.log("HIiii");
+      const newComment = new Comment({ userId, bookId, comment });
+      await newComment.save();
+      await Book.findOneAndUpdate(bookId, {
+        $push: { comments: newComment },
+      });
+      await User.findOneAndUpdate(userId, {
+        $push: { comments: newComment },
+      });
+      return newComment;
+    },
+    removeComment: async (_, { bookId }) => {
+      const update = { $pop: { comments: 1 } };
+      const book = await Book.findOneAndUpdate(bookId, update);
+      return "Comment removed!";
     },
   },
 };

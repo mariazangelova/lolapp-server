@@ -76,9 +76,12 @@ const resolvers = {
     addComment: async (_, { userId, bookId, comment }) => {
       const newComment = new Comment({ userId, bookId, comment });
       await newComment.save();
-      await Book.findOneAndUpdate(bookId, {
-        $push: { comments: newComment },
-      });
+      await Book.findOneAndUpdate(
+        { _id: bookId },
+        {
+          $push: { comments: newComment },
+        }
+      );
       await User.findOneAndUpdate(userId, {
         $push: { comments: newComment },
       });
@@ -86,7 +89,7 @@ const resolvers = {
     },
     removeComment: async (_, { bookId }) => {
       const update = { $pop: { comments: 1 } };
-      const book = await Book.findOneAndUpdate(bookId, update);
+      const book = await Book.findOneAndUpdate({ _id: bookId }, update);
       return "Comment removed!";
     },
   },

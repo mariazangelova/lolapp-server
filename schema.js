@@ -50,7 +50,7 @@ const typeDefs = gql`
     addGenre(name: String!): Genre!
     addGenreToBook(id: ID!, genres: [GenreInput]): Book!
     removeGenreToBook(id: ID!): Book!
-    addComment(userId: String!, bookId: String!, comment: String!): Comment!
+    addComment(userId: ID!, bookId: ID!, comment: String!): Comment!
     removeComment(bookId: ID!): String
   }
 `;

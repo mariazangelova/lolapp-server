@@ -74,7 +74,6 @@ const resolvers = {
       return book;
     },
     addComment: async (_, { userId, bookId, comment }) => {
-      console.log("HIiii");
       const newComment = new Comment({ userId, bookId, comment });
       await newComment.save();
       await Book.findOneAndUpdate(bookId, {

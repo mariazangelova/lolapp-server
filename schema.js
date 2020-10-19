@@ -37,7 +37,7 @@ const typeDefs = gql`
   }
   type Mutation {
     signup(username: String!, password: String!): User!
-    login(username: String!, password: String!): String!
+    login(username: String!, password: String!): AuthPayload
     removeUser(id: String!): String!
     updateUser(id: String!, username: String!, password: String!): String!
     addBook(
@@ -52,6 +52,10 @@ const typeDefs = gql`
     removeGenreToBook(id: ID!): Book!
     addComment(userId: ID!, bookId: ID!, comment: String!): Comment!
     removeComment(bookId: ID!): String
+  }
+  type AuthPayload {
+    token: String
+    user: User
   }
 `;
 

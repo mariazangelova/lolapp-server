@@ -7,7 +7,7 @@ const resolvers = {
   Query: {
     users: () => User.find(),
     user(parent, args, context, info) {
-      const user = User.findById(args.id);
+      const user = User.findById(args.id).populate("comments");
       return user;
     },
     books: () => Book.find().populate("comments"),
@@ -39,12 +39,13 @@ const resolvers = {
       if (!passwordIsValid) {
         throw new AuthenticationError("Invalid password");
       }
-      const token = toJWT({ id: user.id });
-      return token;
+      const token = toJWT({
+        id: user.id,
+      });
+      return { token, user };
     },
     removeUser: async (_, { id }) => {
       const user = await User.findByIdAndDelete(id);
-      console.log(user);
       return "User removed from database";
     },
     updateUser: async (_, { id, username, password }) => {

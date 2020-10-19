@@ -1,15 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema(
-  {
-    username: String,
-    password: String,
-    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-  },
-  { timestamps: true }
-);
-
 const commentSchema = new Schema(
   {
     comment: String,
@@ -18,7 +9,14 @@ const commentSchema = new Schema(
   },
   { timestamps: true }
 );
-
+const userSchema = new Schema(
+  {
+    username: String,
+    password: String,
+    comments: [commentSchema],
+  },
+  { timestamps: true }
+);
 const genreSchema = new Schema({
   name: String,
 });
